@@ -1,0 +1,261 @@
+TextExcel Checkpoints
+Note that the checkpoints are cumulative. When you submit each checkpoint, the submitted program should pass the details in the current checkpoint as well as all objectives in previous checkpoints.  To facilitate testing, put all your classes in the project you imported (with the interfaces and tests).
+
+Checkpoint 1: Main command loop, Spreadsheet, SpreadsheetLocation
+For this checkpoint, you must work on four Java source files:
+
+Spreadsheet.java: A class that implements the Grid interface (provided for you)
+It must contain correct implementations of the getRows() and getCols() methods based on the total numbers of rows (20) and columns (12) required in the project description.  (These methods ignore header rows and columns counting only those with cells for which a user could provide input.)  
+processCommand() should return an empty string.
+In this checkpoint, none of the other Grid methods will be tested, so you may put in whatever dummy implementations you like as long as they compile.
+Write a Spreadsheet constructor that initializes a 2D array of cells with all elements containing EmptyCell objects.
+
+SpreadsheetLocation.java: A class that implements the Location interface
+The Location interface must be fully and correctly implemented
+SpreadsheetLocation must contain a constructor taking a single String parameter 
+(e.g., “D20”).
+Note that the testing file expects to treat “A1” as being at row 0 and column 0.  
+(The header with the letters from A-L and the number column from 1-20 are not counted when determining location.)
+
+
+TextExcel.java: A class with a main method that constructs a Spreadsheet, and has the command loop 
+Reads commands, calls the spreadsheet’s processCommand method to process each line of input, prints the String returned from processCommand, and repeats until “quit” is read
+For this checkpoint, the only command you need to implement is “quit”.  You do not need to actually correctly implement any others, but your program must compile and run without crashing. 
+
+EmptyCell.java: A class that implements the Cell interface 
+The Cell interface must be fully and correctly implemented.  
+Copy the comments from the Cell interface into the appropriate locations in your EmptyCell class.
+Note that the implementations of both methods in the Cell interface can be extremely simple.
+
+Testing: You must pass all the tests in the provided A_Checkpoint1 class, plus you should ensure your program works as specified when run interactively.  (That means, once you pass all the automated tests, make sure that you run your program the good old fashioned way and it interacts like you would expect… welcoming you to the program so that you know it’s running, allowing you to enter commands, and quitting appropriately.)  
+
+Checkpoint 2:  Assign and inspect TextCells, clear cells, and print sheet
+For this checkpoint, you must do the following:
+
+Create a TextCell class that implements the Cell interface and stores String values.
+fullCellText() returns an exact copy of the original String entered into the cell including the quotation marks. 
+abbreviatedCellText() returns the abbreviated version of the text including only 10 characters.  It does not include the original quotation marks. 
+
+In the Spreadsheet class:
+
+
+Implement the getCell method. 
+The getCell method accepts a Location, and returns the Cell at that location. 
+
+
+For this checkpoint, the Cell returned will be either an EmptyCell or a TextCell, depending on whether that cell was assigned a string value (or is empty).  (For future checkpoints, other types of Cells may get returned.)
+
+Implement the getGridText() method
+Return a single String containing the entire spreadsheet grid.  (The String will get printed in a different method, but when printed should contain the header line with the letters across the top as well as the row numbers down the side, the grid lines, and all the entries.  When you finish building it, make sure there’s also a carriage return following the completion of the last line.)
+
+
+When displaying the whole grid, you want all the displayed text to fit within the 10 space limit of each cell.  With that in mind, should your getGridText() method pick up cell values using the abbreviatedCellText() method or the fullCellText() method on the Cell interface? 
+
+
+Testing note:  Your spreadsheet output from getGridText must match exactly what the test expects, including spaces.  An easy way to see what is expected is to run this code in your main() temporarily:
+        TestsALL.Helper th = new TestsALL.Helper();
+        System.out.println(th.getText());
+and then output your spreadsheet’s text immediately after so you can see how they line up.  (Don’t forget to remove or at least comment out your testing code in your final submission!) 
+
+Implement enough of the processCommand method on your Spreadsheet class to handle the following four commands:
+cell inspection (e.g., A1). 
+This should return the value at that cell using the fullCellText() method on the Cell interface.   
+
+
+assignment of string values (e.g., A1 = “Hello”). 
+This should return the String of the entire sheet (reflecting the new cell assignment), as returned by getGridText().
+
+
+clearing the entire sheet (e.g., clear). 
+This should return the String of the entire sheet (reflecting the clear command), as returned by getGridText().
+
+
+clearing a particular cell (e.g., clear A1). This should return the String of the entire sheet (reflecting the clear cell command), as returned by getGridText().
+
+
+Please break functionality up into different methods as appropriate.  
+
+The tests require that you accept upper and lowercase commands (meaning A1 and a1 should both work).  
+
+Hint:  You may find the split method useful for parsing commands.  There are two versions of this method, only one of which you have used before.  You may want to check out the description in the notes below.
+
+
+For this checkpoint, you do not need to support entering real-valued cells (decimal values, percents, or formulas).
+
+
+Testing: You must pass all the tests in the provided A_Checkpoint2 class and previous tests.  
+
+
+Extra Checkpoint 2 Hints:
+
+
+When you are parsing commands, you may find the split method (on the String class) useful. When you call split on a string, and give it a delimiter string, such as " " (i.e., a String with a space), it will return an array of Strings split up by the delimiter you passed in. For example:
+
+String str = "Cat Dog Rat Frog";
+String[] arr = s.split(" ");
+
+will set arr to an array consisting of four strings: “Cat”, “Dog”, “Rat”, and “Frog”.  There’s also an overload with a second parameter to set a limit on the number of strings returned, for example 
+"Cat Dog Rat Frog".split(" ", 2) will return an array consisting of two strings: “Cat” and “Dog Rat Frog”.
+
+When parsing cell identifiers (such as B3) you will need to convert the column letter (in this case B) into a column number.  You may find code such as the following a useful way to do this.  If you expect the column letter to appear at index i in the String str, you could use:
+
+
+int colNumber = Character.toUpperCase(str.charAt(i)) - 'A';
+
+to grab the character at that index, and “subtract” ‘A’ from it, giving you 0 for ‘A’, 1 for ‘B’, etc.  This works because the char data type stores characters as numbers, and all the capital letters appear together in alphabetical order. 
+
+
+
+
+
+Checkpoint 3: RealCell, ValueCell, PercentCell, and FormulaCell 
+
+So far, you have created 2 different types of cells that implement the Cell interface: EmptyCells and TextCells.  In this checkpoint, you will add one more type: RealCells.  
+
+RealCells are the cells that hold numbers and participate in calculations.  These cells can contain integers and doubles (stored in ValueCells), percents (stored in PercentCells), and even formulas (stored in FormulaCells). All are described below.
+
+ValueCell
+You create a ValueCell when the assignment command specifies a simple decimal value:
+
+A1 = 8.42259265958979
+
+When the user inspects a ValueCell, you print the complete value, to full precision:
+
+A1 
+causes you to print: 8.42259265958979
+
+When the full spreadsheet prints, the value is always truncated to fit inside the cell width.  Notice the value is not rounded, it’s just truncated.
+
+   |A         |B         |C         |D         |E         |F         |G         |H         |I         |J         |K         |L         |
+1  |8.42259265|          |          |          |          |          |          |          |          |          |          |          |
+
+Note:  If the user enters values like 12 and 0.0034000, those are the exact values that will print upon inspection, however, they will appear as the doubles 12.0 and 0.0034 whenever the spreadsheet prints.
+
+PercentCell
+You create a PercentCell when the assignment command specifies a decimal value followed by a %
+
+A1 = 8.92259265958979%
+
+When the user inspects a PercentCell, you print the complete value, to full precision, in decimal form (not percent form):
+
+A1 
+causes you to print: 0.0892259265958979
+
+When the full spreadsheet prints, the value is always printed as a percent (including the % symbol), and the decimal portion is truncated, not rounded.
+
+   |A         |B         |C         |D         |E         |F         |G         |H         |I         |J         |K         |L         |
+1  |8%        |          |          |          |          |          |          |          |          |          |          |          |
+
+
+FormulaCell
+You create a FormulaCell when the assignment command specifies an expression contained in parentheses:
+
+A1 = ( 1 + B5 + 3 )
+
+When the user inspects a FormulaCell , you print the complete formula, including the outer parentheses:
+A1 
+causes you to print: ( 1 + B5 + 3 )
+
+When the full spreadsheet prints, the formula will be evaluated, and the final value printed in the spreadsheet, truncated to fit inside the cell width.  However, for this checkpoint, your FormulaCells will not be required to parse input or perform actual calculations.   When the full spreadsheet prints, you may print any value you like for the FormulaCell, so long as it fits within the cell width and is school appropriate.  The complete implementation of FormulaCells will occur in future checkpoints.
+
+
+
+Checkpoint 3 Description
+For this checkpoint, you must do the following:
+
+Create a RealCell super class that implements the Cell interface.  Some methods may need to be overridden by certain subclasses.  
+
+The RealCell super class should contain a field that stores the String representing what the user entered, in the same format you will print when the user asks to inspect a single cell. (For example, “5.8” for ValueCell, “0.02” for a PercentCell, and “( 5 + 3 * A2 )” or “( sum A6-B7 )” for a FormulaCell.) 
+
+The RealCell super class also needs a getDoubleValue() method that returns the calculated value of the cell as a double (not a String). Being able to return a double and not a String will be useful when performing calculations – times when you actually want to do something with a cell’s value instead of just returning it for printing.  The getDoubleValue() method must be overridden in your ValueCell, PercentCell, and FormulaCell subclasses. 
+
+
+Create three subclasses that extend RealCell: ValueCell, PercentCell, and FormulaCell, as defined above.  Access and override pieces of your RealCell class as needed.  
+
+Note:  For this early checkpoint, getDoubleValue() only has to work correctly in ValueCell and PercentCell. In FormulaCell, it can return anything you want as long as the program compiles and does not crash.  This means you do not yet have to parse formulas for this checkpoint – that will come in Checkpoints 4 and 5.  However, the fullCellText() method (from the Cell interface) must return the full formula if the cell is a formula. See hints below. 
+
+
+Continue implementing the processCommand function, so that it handles
+Percent assignment (e.g. A1 = 5.2%)
+Real value assignment (e.g. A1 = 5.2, or A1 = (A2 + A3 * 4), or A1 = (sum A1-D4)). Again, you do not need to parse formulas for this checkpoint; you just need to store them so they can be inspected.
+
+
+Testing: You must pass all tests in the A_Checkpoint3 class and previous tests.  
+
+Extra Checkpoint 3 Hints:
+
+
+Although PercentCell must extend RealCell, you may find it easier to do so indirectly (by extending ValueCell and overriding key portions of ValueCell).  It is up to you to find the way you are most comfortable with.
+
+
+Integer values entered into Value Cells will be stored and shown as doubles.  For instance, if the user enters: 
+    A1 = 3
+    C1 = 5.000
+The spreadsheet will display them as shown below:
+    |A         |B         |C         |D         |E         |F         |G         |H         |I         |J         |K         |L         |
+     1   |3.0       |          |5.0       |          |          |          |          |          |          |          |          |          |
+
+
+Java automatically handles the decimal places in these cases as long as the values are stored as doubles.  
+
+
+Checkpoint 4: Arithmetic formulas made up of constant values
+
+In this checkpoint, you will continue implementing your FormulaCell class.  For now, you may assume that the expression stored in the FormulaCell does NOT have cell references.  For example, you will need to evaluate a formula like: ( 4 - 5 * 2 / 4 ), but not like ( 4 - A1 * 3 )  or ( AVG A2-A5 ).  These more complicated cases will be handled in Checkpoints 5 and 6.
+
+Numbers in formulas will only be doubles (not fractions).  Operations may simply be evaluated from left-to-right (ignoring PEMDAS) for full credit.  If you are feeling brave, you may instead follow standard operator precedence rules (first */ and then + -) for extra-credit.  However, we strongly recommend you get left-to-right working first, and make a safe copy of that project before attempting any extra credit.
+
+When you parse formulas entered by the user, note that formulas always start with a left parenthesis followed by a space, and that all operators and operands are separated from each other with a space, and that the formula ends with a space and then a right parenthesis. Although the formula is surrounded by parentheses, we will not allow parentheses inside the formula, and they will not be tested.
+
+
+Checkpoint 4 Description
+For this checkpoint, you must do the following:
+
+Write the getDoubleValue() method of the FormulaCell class such that it contains all the parsing and calculation logic required to generate a numeric result for an arithmetic formula that does not contain cell references.  
+
+Remember that formulas can be as long as the user likes.  Unlike FracCalc, which only allowed one operator, there could theoretically be 50 or 100 or even more operators in a formula.  The split method on the String class may be useful in parsing your formulas.
+
+
+Adjust the abbreviatedCellText() method of the FormulaCell class to call getDoubleValue().  The method will then return this result as an appropriately formatted String for display in the spreadsheet grid.  
+
+Note: Do not be tempted to store the result of evaluating the expression into a field for later use.  (That would set you up for failure with the final submission.)  Instead, each time getDoubleValue() is called, you should evaluate the expression anew. 
+
+Testing: You must pass all the tests in the provided B_Checkpoint1 class and previous tests.
+
+
+Checkpoint 5: Evaluating arithmetic formulas (including cell references) and method formulas
+
+In this checkpoint, you will continue implementing your FormulaCell class.  This time though, the expression stored in the FormulaCell may have cell references.  For example, you will need to evaluate arithmetic formulas like: 
+
+( 2 + 5 / 3 – 4 )     or     ( 5 * A4 )     or      ( 2 + A1 * A4 + A5 ) 
+
+If a cell referred to by a formula changes value, the formula(s) referring to that cell need to update as well. Note that a formula can refer to a cell that contains another formula.   That said, you do NOT have to handle circular references, such as 
+
+A1 = ( A2 + 1 ) and A2 = ( A1 + 1 ).
+
+In this checkpoint, you must also handle method formulas: those formulas involving the AVG and SUM methods.  For example:
+
+L14 = ( SUM B6-C12 ) 
+
+C12 = ( AVG A1-A5 )
+
+
+Checkpoint 5 Description
+For this checkpoint, you must do the following:
+
+Finish the getDoubleValue() method of the FormulaCell class such that it contains all the parsing and calculation logic required to generate a numeric result for an arithmetic formula that may or may not contain cell references and can handle the SUM and AVG methods.  
+
+
+Testing: You must pass all the tests in the provided B_Final class and previous tests.
+
+
+Extra Checkpoint 5 Hints:
+
+
+Believe it or not, there is not much more code required to support arithmetic formulas that refer to other cells (e.g. ( A1 + 2 * A2 / A3 )). When you encounter a cell identifier (such as A1), you simply need to get the value of the cell referred to by A1. To do this, you will need to ask your spreadsheet to give you the Cell at that location (using the Spreadsheet’s getCell method), cast the resulting Cell to a RealCell, and call its getDoubleValue method to get the cell’s value.
+
+If after you finish supporting constant-valued formulas, you find that you are writing radically different (or long) code to handle formulas that refer to other cells, you are likely doing it wrong. Please ask for help in class, in tutorial, or after school.
+
+For FormulaCells, do not ever store the calculated formula result as a field in the FormulaCell. Instead, every time you need a value for a formula cell, call your getDoubleValue() method.  It should parse the stored string, calculate the double value (whether it is a single value or formula), and return it. Please trust us on this – students who do not follow this hint will likely spend much more time getting their program to work correctly.
+
+The reason for this is because for formula cells, the resulting value may change if other cells in the spreadsheet (referred to by the formula) change. So if you store the double value as a field and use it later, it could end up out of date.
